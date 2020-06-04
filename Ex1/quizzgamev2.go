@@ -9,9 +9,13 @@ import (
 	"time"
 )
 var correct int
+var csvfilename *string
+var timeLimit *int
+var num int
 
 func main()  {
-	csvfilename := flag.String("file", "problems.csv", "The filename of the csv file")
+	csvfilename = flag.String("file", "problem.csv", "The filename of the csv file")
+	timeLimit = flag.Int("time", 15, "Time duration of quizz in seconds")
 	flag.Parse()
 
 
@@ -26,17 +30,12 @@ func main()  {
 	if err!= nil {
 		exit("Error Parsing csv file")
 	}
-	go func() {
-		timer:= time.NewTimer(5 * time.Second)
-		<-timer.C
-		fmt.Printf("\nYou got %d out of %d", correct, len(lines))
-		exit("\nSorry you have run out of time.")
-	}()
-
+	
+	num = len(lines)
 	parsequizz(lines,quizzMaster)  //pardon the complexity, I was testing a new concept.
 	
 
-	
+	fmt.Printf("\nYou got %d out of %d", correct, num)
 }
 
 //problems models the quizz structure.
@@ -67,6 +66,13 @@ func parsequizz(lines [][]string, next func(q []problems)) {
 
 //quizzMaster takes in an array of problems and presents them to the user.
 func quizzMaster(q []problems) {
+
+	go func() {
+		timer:= time.NewTimer(time.Duration(*timeLimit) * time.Second)
+		<-timer.C
+		fmt.Printf("\nYou got %d out of %d", correct, num)
+		exit("\nSorry you have run out of time.")
+	}()
 	
 	for i, problem:= range q{
 		fmt.Printf("Question #%d %s \n=", i+1, problem.question)
