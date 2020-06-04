@@ -12,6 +12,7 @@ import (
 
 func readCsv(filename string) error{
 	f, err := os.Open(filename)
+	defer f.Close()
 	if err != nil {
 		return errors.New("An error occured opening the file: " + err.Error())
 	}
@@ -51,7 +52,6 @@ func readCsv(filename string) error{
 		return errors.New(err.Error())
 	}
 	
-	defer f.Close()
 	return nil
 }
 
@@ -59,16 +59,15 @@ func readCsv(filename string) error{
 var filename string
 func init() {
 	const (
-		defaultFile = "problems.csv"
+		defaultFile = "problem.csv"
 		usage = "The filename of the csv file"
 	)
 	
 	flag.StringVar(&filename,"file",defaultFile,usage)
 	flag.StringVar(&filename,"f",defaultFile,usage+"(shorthand)")
-	flag.Parse()  // Execute command-line parsing of flags
 }
 func main() {
-	//wrdPtr := flag.String("file","problems.csv","This is the the csv filename")
+	flag.Parse()  // Execute command-line parsing of flags
 	err := readCsv(filename)
 	if err != nil {
 		log.Fatal(err)
