@@ -48,6 +48,7 @@ func readCsv(file string) ([][]string, error ) {
 	return quizz, err
 }
 
+//makeQuizz converts 2D array of strings to an array of 'problem' structs
 func makeQuizz(question [][]string) ([]problem) {
 	quizz := make([]problem, len(question))
 	for i, line := range question{
@@ -59,11 +60,14 @@ func makeQuizz(question [][]string) ([]problem) {
 	return quizz
 }
 
+//askQuizz handles the display 0f questions
 func askQuizz(problems []problem) {
-
 	for i, question := range problems{
+
+		// initializes a timer to determine end of quizz
 		timer := counter(len(problems))
 		defer timer.Stop()
+
 		fmt.Printf("Question #%d: %s \n",i+1, question.q)
 		var answer string
 		fmt.Scanf("%s\n",&answer)
