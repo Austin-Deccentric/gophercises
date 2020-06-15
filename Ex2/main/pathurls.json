@@ -1,0 +1,14 @@
+[
+    {
+        "path": "/bolt",
+        "url": "https://github.com/boltdb/bolt"
+    },
+    {
+        "path": "/urlshort-godoc",
+        "url": "https://godoc.org/github.com/gophercises/urlshort"
+    },
+    {
+        "path": "/yaml-godoc",
+        "url": "https://godoc.org/gopkg.in/yaml.v2"
+    }
+]
