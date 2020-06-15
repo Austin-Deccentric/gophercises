@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"urlshort/urlshort"
+	"github.com/boltdb/bolt"
 )
 
 func main() {
@@ -25,11 +26,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db:= urlshort.OpenDb()
+	db:= openDb()
 	defer db.Close()
 
-	urlshort.UpdateDB(dataDb)
-	dbHandler := urlshort.DBHandler(mux)
+	urlshort.UpdateDB(dataDb,db)
+	dbHandler := urlshort.DBHandler(mux,db)
 
 
 	// yamlHandler, err := urlshort.YAMLHandler(data, dbHandler)
@@ -53,4 +54,20 @@ func defaultMux() *http.ServeMux {
 
 func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Hello, world!")
+}
+
+
+
+// OpenDb opens a connection to a BoltDb database.
+func openDb() *bolt.DB{
+	// Open the my.db data file in your current directory.
+	// It will be created if it doesn't exist.
+	db, err := bolt.Open("pathurls.db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//db = conn
+	fmt.Println("Connected to database")
+	return db
+	
 }

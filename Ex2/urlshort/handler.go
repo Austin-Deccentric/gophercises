@@ -1,7 +1,6 @@
 package urlshort
 
 import (
-	"fmt"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -41,17 +40,12 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 //
 // The only errors that can be returned all related to having
 // invalid YAML data.
-//
-// See MapHandler to create a similar http.HandlerFunc via
-// a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	// TODO: Implement this...
 	parsedYaml,err := parseYaml(yml); if err != nil {
 		return nil,err
 	}
 	pathMap := buildMap(parsedYaml)
-	//fmt.Println(pathMap)
-
 	return MapHandler(pathMap, fallback), nil
 }
 
@@ -74,7 +68,18 @@ func buildMap(inputData []pathURL) map[string]string{
 	return urlMap
 }
 
-//JSONHandler handles URL to paths in form of a valid JSON item. 
+//JSONHandler takes a slice of byte of  valid JSON item.
+//and a fallback handler that is to be called if URL path is not found.
+// NB: Valid JSON item:
+// {
+// 	"path": <URL Path>,
+// 	"url": "<The URL to be accessed>"
+// }
+//Example:
+// {
+// 	"path": "/bolt",
+// 	"url": "https://github.com/boltdb/bolt"
+// } 
 func JSONHandler(jsn []byte, fallback http.Handler) (http.HandlerFunc, error){
 	var pathUrls []pathURL
 	if err:= json.Unmarshal(jsn, &pathUrls); err != nil{
@@ -84,24 +89,7 @@ func JSONHandler(jsn []byte, fallback http.Handler) (http.HandlerFunc, error){
 	return MapHandler(pathsToUrls, fallback), nil
 }
 
-//DBHandler queries the database for the string and redirects to the URL if found.
-// Otherwise is redirects to serves the Fallback
-func DBHandler(fallback http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
-		// Check for URL in the database
-		result,err := getdata(path); if err !=nil{
-			log.Fatal(err)
-		}
-		fmt.Println("The URL is:", result)
-		if result == nil {
-			log.Println("Url not found. back to home")
-			fallback.ServeHTTP(w,r)
-			return
-		}
-		http.Redirect(w,r,string(result), http.StatusFound)
-	}
-}
+
 
 
 type pathURL struct {
