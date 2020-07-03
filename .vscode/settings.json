@@ -1,6 +1,0 @@
-{
-    "editor.formatOnSave": true,
-    "workbench.sideBar.location": "right",
-    "workbench.editor.limit.enabled": true,
-    "go.formatTool": "gofmt"
-}
